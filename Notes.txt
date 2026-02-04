@@ -1,0 +1,30 @@
+Starting virtual venv_ .\.venv\Scripts\Activate.ps1
+
+adding to Git_ git add . / git commit -m "Initial project structure and configuration"
+-----------------------------------------------------------------------
+Common Mistakes & Troubleshooting
+Mistake 1: Forgetting to activate virtual environment
+
+Symptom: pip install installs globally
+Fix: See (.venv) in your prompt before installing
+
+Mistake 2: Wrong Python version
+
+Symptom: Dependency installation fails
+Fix: Use py -3.11 explicitly
+
+Mistake 3: PowerShell script execution disabled
+
+Symptom: Cannot activate virtual environment
+Fix: Run Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
+
+Mistake 4: Missing __init__.py files
+
+Symptom: Python can't import modules
+Fix: Every folder that should be a package needs __init__.py
+------------------------------------------------------------------------
+
+
+# After configuring DNS in Docker Desktop and restarting:
+docker system prune -f
+docker-compose build

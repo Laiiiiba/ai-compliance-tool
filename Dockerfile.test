@@ -1,0 +1,10 @@
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Test minimal build without installing packages
+RUN echo "Testing Docker build..."
+
+COPY requirements.txt .
+
+CMD ["python", "--version"]
