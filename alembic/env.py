@@ -27,10 +27,10 @@ from app.core.config import settings
 # Even if we don't have models yet, we prepare the structure
 
 # Future model imports will go here:
-# from app.db.models.project import Project
-# from app.db.models.assessment import Assessment
-# from app.db.models.answer import Answer
-# from app.db.models.regulatory_flag import RegulatoryFlag
+from app.db.models.project import Project
+from app.db.models.assessment import Assessment
+from app.db.models.answer import Answer
+from app.db.models.regulatory_flag import RegulatoryFlag
 
 # For now, we have no models, but the import structure is ready
 
