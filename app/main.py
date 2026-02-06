@@ -12,6 +12,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import settings
 from app.core.logging import setup_logging
+from app.core.database import check_database_connection
 
 
 # Set up logging before anything else
@@ -26,12 +27,6 @@ async def lifespan(app: FastAPI):
     
     Code before 'yield' runs on startup.
     Code after 'yield' runs on shutdown.
-    
-    This is where you:
-    - Initialize database connections
-    - Load ML models
-    - Start background tasks
-    - Clean up resources on shutdown
     """
     # Startup
     logger.info("=" * 60)
@@ -39,6 +34,13 @@ async def lifespan(app: FastAPI):
     logger.info(f"Environment: {settings.app_env}")
     logger.info(f"Debug mode: {settings.debug}")
     logger.info("=" * 60)
+    
+    # Check database connection
+    if check_database_connection():
+        logger.info("✓ Database connection verified")
+    else:
+        logger.error("✗ Database connection failed!")
+        logger.warning("Application will start but database operations will fail")
     
     yield
     
@@ -58,13 +60,12 @@ app = FastAPI(
 
 
 # Configure CORS middleware
-# Allows frontend applications to make requests to this API
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.cors_origins,
     allow_credentials=True,
-    allow_methods=["*"],  # Allow all HTTP methods (GET, POST, etc.)
-    allow_headers=["*"],  # Allow all headers
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 
@@ -92,18 +93,17 @@ async def health_check():
     Used by:
     - Docker healthchecks
     - Kubernetes liveness/readiness probes
-    - Monitoring systems (Prometheus, DataDog, etc.)
+    - Monitoring systems
     
     Returns:
-        dict: Health status and basic system information
+        dict: Health status and system information including database connectivity
     """
+    db_healthy = check_database_connection()
+    
     return {
-        "status": "healthy",
+        "status": "healthy" if db_healthy else "degraded",
         "app_name": settings.app_name,
         "version": settings.app_version,
-        "environment": settings.app_env
+        "environment": settings.app_env,
+        "database": "connected" if db_healthy else "disconnected"
     }
-
-
-# Additional endpoints will be added here in future steps
-# We'll use APIRouter to organize endpoints by domain
