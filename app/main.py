@@ -1,7 +1,5 @@
 """
 FastAPI application entry point.
-
-This module creates and configures the FastAPI application instance.
 """
 
 import logging
@@ -14,6 +12,9 @@ from app.core.config import settings
 from app.core.logging import setup_logging
 from app.core.database import check_database_connection
 
+# Import routers
+from app.api.endpoints import projects, assessments
+
 
 # Set up logging before anything else
 setup_logging()
@@ -22,12 +23,7 @@ logger = logging.getLogger(__name__)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """
-    Application lifespan events.
-    
-    Code before 'yield' runs on startup.
-    Code after 'yield' runs on shutdown.
-    """
+    """Application lifespan events."""
     # Startup
     logger.info("=" * 60)
     logger.info(f"Starting {settings.app_name} v{settings.app_version}")
@@ -69,13 +65,14 @@ app.add_middleware(
 )
 
 
+# Include routers
+app.include_router(projects.router, prefix="/api/v1")
+app.include_router(assessments.router, prefix="/api/v1")
+
+
 @app.get("/")
 async def root():
-    """
-    Root endpoint.
-    
-    Returns basic API information.
-    """
+    """Root endpoint."""
     return {
         "message": f"Welcome to {settings.app_name}",
         "version": settings.app_version,
@@ -87,17 +84,7 @@ async def root():
 
 @app.get("/health")
 async def health_check():
-    """
-    Health check endpoint.
-    
-    Used by:
-    - Docker healthchecks
-    - Kubernetes liveness/readiness probes
-    - Monitoring systems
-    
-    Returns:
-        dict: Health status and system information including database connectivity
-    """
+    """Health check endpoint."""
     db_healthy = check_database_connection()
     
     return {
